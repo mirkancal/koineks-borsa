@@ -1,96 +1,139 @@
-var coinData = {};
-var requestFunc = function() {
-$.ajax({
-    url: "https://cors-anywhere.herokuapp.com/http://koineks.com/ticker",
-    dataType: 'json',
-    async: false,
-    success: function(data) {
-        coinData = data;
-    }
-});
-//Bitcoin
-document.getElementById("btc-current").innerHTML = coinData.BTC.current;
-document.getElementById("btc-high").innerHTML = coinData.BTC.high;
-document.getElementById("btc-low").innerHTML = coinData.BTC.low;
-document.getElementById("btc-percentage").innerHTML = coinData.BTC.change_percentage;
+var koineksData;
+var koineksKeys = ["BTC", "ETH", "TRX", "EOS", "USDT", "BCH", "LTC", "DOGE", "DASH", "XRP", "XLM", "XEM", "BTG", "ETC"];
 
-//Etherium
-document.getElementById("eth-current").innerHTML = coinData.ETH.current;
-document.getElementById("eth-high").innerHTML = coinData.ETH.high;
-document.getElementById("eth-low").innerHTML = coinData.ETH.low;
-document.getElementById("eth-percentage").innerHTML = coinData.ETH.change_percentage;
+_getKoineks = function () {
+    var url = "https://cors-anywhere.herokuapp.com/http://koineks.com/ticker";
+    return fetch(url).then(function (response) {
+      return response.json();
+    }).then(function (responseJson) {
+      koineksData = Object.assign({}, responseJson);
+      _renderKoineks(koineksData);
+      //_renderKoineks(koineksData);
 
-//Bitcoin Gold
-document.getElementById("btg-current").innerHTML = coinData.BTG.current;
-document.getElementById("btg-high").innerHTML = coinData.BTG.high;
-document.getElementById("btg-low").innerHTML = coinData.BTG.low;
-document.getElementById("btg-percentage").innerHTML = coinData.BTG.change_percentage;
+    })["catch"](function (error) {
+      console.error(error);
+    });
+  };
 
-//Etherium Classic
-document.getElementById("etc-current").innerHTML = coinData.ETC.current;
-document.getElementById("etc-high").innerHTML = coinData.ETC.high;
-document.getElementById("etc-low").innerHTML = coinData.ETC.low;
-document.getElementById("etc-percentage").innerHTML = coinData.ETC.change_percentage;
+_renderLayout= function(arr) {
+    arr.forEach((coin) => {
 
-//DOGE
-document.getElementById("doge-current").innerHTML = coinData.DOGE.current;
-document.getElementById("doge-high").innerHTML = coinData.DOGE.high;
-document.getElementById("doge-low").innerHTML = coinData.DOGE.low;
-document.getElementById("doge-percentage").innerHTML = coinData.DOGE.change_percentage;
+        // select container
+        var container = document.getElementsByClassName('container')[0];
 
-//LITECOIN
-document.getElementById("ltc-current").innerHTML = coinData.LTC.current;
-document.getElementById("ltc-high").innerHTML = coinData.LTC.high;
-document.getElementById("ltc-low").innerHTML = coinData.LTC.low;
-document.getElementById("ltc-percentage").innerHTML = coinData.LTC.change_percentage;
+        // create card
+        var card = document.createElement('card');
+        card.className = 'card';
+        card.id = coin.toLowerCase();
 
-//RIPPLE
-document.getElementById("xrp-current").innerHTML = coinData.XRP.current;
-document.getElementById("xrp-high").innerHTML = coinData.XRP.high;
-document.getElementById("xrp-low").innerHTML = coinData.XRP.low;
-document.getElementById("xrp-percentage").innerHTML = coinData.XRP.change_percentage;
+        // create div for table
+        var tableDiv = document.createElement('div');
+        tableDiv.className = 'table';
 
-//NEM
-document.getElementById("xem-current").innerHTML = coinData.XEM.current;
-document.getElementById("xem-high").innerHTML = coinData.XEM.high;
-document.getElementById("xem-low").innerHTML = coinData.XEM.low;
-document.getElementById("xem-percentage").innerHTML = coinData.XEM.change_percentage;
+        // create actual table
+        var table = document.createElement('table');
 
-//DASH
-document.getElementById("dash-current").innerHTML = coinData.DASH.current;
-document.getElementById("dash-high").innerHTML = coinData.DASH.high;
-document.getElementById("dash-low").innerHTML = coinData.DASH.low;
-document.getElementById("dash-percentage").innerHTML = coinData.DASH.change_percentage;
+        var thead = document.createElement('thead');
+        var thead_tr = document.createElement('tr');
 
-//STELLAR
-document.getElementById("xlm-current").innerHTML = coinData.XLM.current;
-document.getElementById("xlm-high").innerHTML = coinData.XLM.high;
-document.getElementById("xlm-low").innerHTML = coinData.XLM.low;
-document.getElementById("xlm-percentage").innerHTML = coinData.XLM.change_percentage;
+        // preparing retro coin image for first th
+        var retroCoinImg = document.createElement('img');
+        retroCoinImg.src = "icons/retro.png";
+        retroCoinImg.alt = "retro coin image";
 
-//BITCOIN CASH
-document.getElementById("bch-current").innerHTML = coinData.BCH.current;
-document.getElementById("bch-high").innerHTML = coinData.BCH.high;
-document.getElementById("bch-low").innerHTML = coinData.BCH.low;
-document.getElementById("bch-percentage").innerHTML = coinData.BCH.change_percentage;
+        // adding retro coin image to first th
+        var thead_tr_th1 = document.createElement('th');
+        thead_tr_th1.appendChild(retroCoinImg);
 
-//TRON
-document.getElementById("trx-current").innerHTML = coinData.TRX.current;
-document.getElementById("trx-high").innerHTML = coinData.TRX.high;
-document.getElementById("trx-low").innerHTML = coinData.TRX.low;
-document.getElementById("trx-percentage").innerHTML = coinData.TRX.change_percentage;
 
-//USD TETHER
-document.getElementById("usdt-current").innerHTML = coinData.USDT.current;
-document.getElementById("usdt-high").innerHTML = coinData.USDT.high;
-document.getElementById("usdt-low").innerHTML = coinData.USDT.low;
-document.getElementById("usdt-percentage").innerHTML = coinData.USDT.change_percentage;
+        var thead_tr_th2 = document.createElement('th');
+        thead_tr_th2.textContent = 'Coin';
 
-console.log(coinData);
+        var thead_tr_th3 = document.createElement('th');
+        thead_tr_th3.textContent = 'Güncel';
 
+        var thead_tr_th4 = document.createElement('th');
+        thead_tr_th4.textContent = 'En Yüksek';
+
+        var thead_tr_th5 = document.createElement('th');
+        thead_tr_th5.textContent = 'En Düşük';
+
+        var thead_tr_th6 = document.createElement('th');
+        thead_tr_th6.textContent = '%';
+
+        thead_tr.appendChild(thead_tr_th1);
+        thead_tr.appendChild(thead_tr_th2);
+        thead_tr.appendChild(thead_tr_th3);
+        thead_tr.appendChild(thead_tr_th4);
+        thead_tr.appendChild(thead_tr_th5);
+        thead_tr.appendChild(thead_tr_th6);
+
+        thead.appendChild(thead_tr);
+
+        // end of thead
+
+        // tbody
+        tbody = document.createElement('tbody');
+
+        tbody_tr = document.createElement('tr');
+
+        // coin photo for td1
+        var coinImage = document.createElement('img');
+        coinImage.src = `icons/${coin.toLowerCase()}.png`
+        coinImage.alt = `${coin.toLowerCase()} icon`
+
+        var tbody_tr_td1 = document.createElement('td');
+        tbody_tr_td1.appendChild(coinImage);
+
+        var tbody_tr_td2 = document.createElement('td');
+        tbody_tr_td2.textContent = `${coin}`;
+
+        var tbody_tr_td3 = document.createElement('td');
+        tbody_tr_td3.id = `${coin}-current`;
+
+        var tbody_tr_td4 = document.createElement('td');
+        tbody_tr_td4.id = `${coin}-high`;
+
+        var tbody_tr_td5 = document.createElement('td');
+        tbody_tr_td5.id = `${coin}-low`;
+
+        var tbody_tr_td6 = document.createElement('td');
+        tbody_tr_td6.id = `${coin}-percentage`;
+
+        tbody_tr.appendChild(tbody_tr_td1);
+        tbody_tr.appendChild(tbody_tr_td2);
+        tbody_tr.appendChild(tbody_tr_td3);
+        tbody_tr.appendChild(tbody_tr_td4);
+        tbody_tr.appendChild(tbody_tr_td5);
+        tbody_tr.appendChild(tbody_tr_td6);
+
+        tbody.appendChild(tbody_tr);
+        // end of tbody
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        tableDiv.appendChild(table);
+        card.appendChild(tableDiv);
+
+        container.appendChild(card);
+        
+    });
+};
+
+_renderKoineks = function(data) {
+    Object.keys(data).forEach((coin) => {
+        document.getElementById(`${coin}-current`).textContent = data[coin].current;
+
+        document.getElementById(`${coin}-high`).textContent = data[coin].high;
+
+        document.getElementById(`${coin}-low`).textContent = data[coin].low;
+
+        document.getElementById(`${coin}-percentage`).textContent = data[coin].change_percentage;
+    
+    })
 }
 
-requestFunc();
-setInterval(requestFunc, 60000);
 
-
+_renderLayout(koineksKeys);
+_getKoineks();
+setInterval(_getKoineks, 60000);
